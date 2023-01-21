@@ -5,16 +5,18 @@ const groupChatSchema = new mongoose.Schema({
     name: { type: String, required: true, index : true, unique: true }, // for convenience we will use the group name as the group id, but we can use a unique id instead in the future
     created_at: { type: Date, default: Date.now },
     description : { type: String, required: true },
-    admins : [{ type: string, ref: 'User',required: true }],
+    admins : [{ type: String, ref: 'User',required: true }],
     members: [{
-        type: string, //now we used userName as id, but we can use a unique id instead in the future
+        type: String, //now we used userName as id, but we can use a unique id instead in the future
         ref: 'User',
         required: true
     }],
     messages: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Message'
-    }]
+    }],
+    groupImage: { type: String, default: null },
+    permissionLevel : { type: Number, default: 0 } // 0 = public, 1 = admin only
 });
 
-const GroupChat = mongoose.model('GroupChat', groupChatSchema);
+module.exports = mongoose.model('GroupChat', groupChatSchema);

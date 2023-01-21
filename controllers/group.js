@@ -36,11 +36,19 @@ module.exports = {
             const encryptedMessage = crypto.createCipheriv('aes-256-cbc', localEncryptKey, iv);
             // encrypt the message and convert it to hex
             const encrypted = encryptedMessage.update(message, 'utf8', 'hex') + encryptedMessage.final('hex');
+            //get the group
+            const group = await Group.findOne({ name: groupName });
+            if(!group) return res.status(404).json({ error: 'Group not found' });
+
+            //check if the user is a member of the group
+            const isMember = group.members.find(member => member === userName);
+            if(!isMember) return res.status(401).json({ error: 'You are not a member of this group' });
+
+            //check permissionLevel
+            if(group.permissionLevel === 1 && group.admins.indexof(userName) == -1) return res.status(401).json({ error: 'You are not an admin of this group' });
+
             //create a new message and add messageType and message
-            //deducing messageType
-            const messageType = message.startsWith('data:image') ? 'image' : 'text';
             const message = await Message.create({
-                messageType: messageType,
                 message: encrypted,
                 sender: userName,
                 group_chat: groupName
@@ -56,7 +64,6 @@ module.exports = {
             let response = await message.save();
             if(response){
                 // add the message to the group chat
-                const group = await Group.findOne(groupName);
                 group.messages.push(message);
                 // save the group messages
                 await group.save();
@@ -72,6 +79,7 @@ module.exports = {
         const { groupName, localEncryptKey, pageNo } = req.body;
         try {
             //paginate to get 20 messages at one time
+            //pageNo is the page number and is depenedent on the client side
             const messages = await Message.find({ group_chat: groupName }).sort({ sent: -1 }).skip(pageNo * 20).limit(20);
             //decrypt the messages
             const decryptedMessages = messages.map(message => {

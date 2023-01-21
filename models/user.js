@@ -10,4 +10,4 @@ const userSchema = new mongoose.Schema({
     groupChats : [{ type: String, ref: 'GroupChat' }]
 });
 
-const User = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);

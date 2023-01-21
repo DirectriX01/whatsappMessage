@@ -14,7 +14,7 @@ const messageSchema = new mongoose.Schema({
         default: "text",
         required: true
     },
-
+    reactions : [ { user : { type: String, ref: 'User',required: true }, reaction : String} ] 
 });
 
-const Message = mongoose.model('Message', messageSchema);
+module.exports = mongoose.model('Message', messageSchema);
