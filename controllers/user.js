@@ -1,12 +1,12 @@
-const user = require('../models/user');
+const User = require('../models/user');
 
 module.exports = {
     async createUser(req, res) {
-        const { name,  } = req.body;
+        const { name, mobile } = req.body;
         try {
             const user = await User.create({
-                name,
-                mobile,
+                username : name,
+                mobile : mobile,
             });
             return res.status(201).json({ user });
         } catch (error) {

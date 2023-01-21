@@ -32,7 +32,8 @@ module.exports = {
     async addMessagetoChat(req, res) {
         const {groupName, message, userName, localEncryptKey} = req.body;
         try {
-            //use localEncryptKey to encrypt message
+            //use localEncryptKey to encrypt 
+            let iv = crypto.randomBytes(6);
             const encryptedMessage = crypto.createCipheriv('aes-256-cbc', localEncryptKey, iv);
             // encrypt the message and convert it to hex
             const encrypted = encryptedMessage.update(message, 'utf8', 'hex') + encryptedMessage.final('hex');
